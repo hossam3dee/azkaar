@@ -1,0 +1,33 @@
+I want a webapp (simple 1 Html file) that's very simple, it's called "أذكار" where Muslims read prayers at day and night,
+the Morning prayers "اذكار الصباح" preferred to be read during "بعد اذان الفجر" to "قبل طلوع الشمس"
+the Night Prayers "اذكار المساء" preferred to be read during "بعد صلاة العصر" to "قبل غروب الشمس"
+
+the files included for both prayers
+morning.txt night.txt
+
+the files are like this
+
+first a title, ignore that
+then the prayer itself in Arabic
+then a divider with the times required that prayer to be said
+then a source for that prayer
+then a * as a major divider
+
+I want the app to load on two buttons, stating "أذكار الصباح" or "أذكار المساء"
+under each the time preferred to be read at
+
+then when entering, load the prayers from the least number of saying to the highest number
+if they are the same number, sort them by length (how many words)
+
+at top card, the prayer
+under it the bottom card the source
+the bottom of the page a counter button, when pressed it goes up by one, it responds to how many times required for each prayer, when done, go the next prayer, I need a progress bar as a circle around that button to indicate how close you are to finish.
+
+I want the app the have dark mode light mode options, with default to dark, and to be responsive to all screens, mainly for phone. a very modern glassy look, and fancy glows, and calm gradients like this website design https://geminicli.com/
+
+for Arabic text use this: https://fonts.google.com/specimen/Amiri?lang=ar_Arab
+for English text use this: https://fonts.google.com/specimen/Raleway
+
+credit me at the very bottom
+
+© hossam3dee.github.io and link that to my portfolio "https://hossam3dee.github.io/"
