@@ -43,6 +43,10 @@
             overflow-x: hidden;
         }
 
+        .font {
+            font-family: 'Amiri', serif;
+        }
+
         body.light-mode {
             background: var(--bg-gradient-light);
             color: var(--text-primary-light);
@@ -413,7 +417,7 @@
             </div>
             
             <button id="installBtn" class="glass-card install-btn">
-                <span>تحميل</span>
+                <span class="font">تحميل</span>
                 <img src="download.png" alt="Download" style="width: 24px; height: 24px;">
             </button>
             <p class="chrome">only for <i class="fa-brands fa-chrome"></i> Chrome users</p>
@@ -453,7 +457,7 @@
                             <circle class="progress-ring__circle" stroke-width="6" fill="transparent" r="44" cx="50"
                                 cy="50" />
                         </svg>
-                        <span id="countDisplay">0</span>
+                        <span class="font" id="countDisplay">0</span>
                     </button>
                     <button class="nav-btn" onclick="nextPrayer()">تخطي</button>
                 </div>
@@ -475,6 +479,10 @@
     </div>
 
     <script>
+        // Function to convert English numbers to Arabic numbers
+        function toArabicNum(num) {
+        return num.toString().replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+}
         // Data Injection
         const azkarData = {
             "morning": [
@@ -902,32 +910,35 @@
         }
 
         function renderPrayer() {
-            if (currentIndex >= currentPrayers.length) {
-                // Done with all prayers
-                goHome();
-                return;
-            }
+    if (currentIndex >= currentPrayers.length) {
+        goHome();
+        return;
+    }
 
-            const prayer = currentPrayers[currentIndex];
+    const prayer = currentPrayers[currentIndex];
 
-            prayerText.textContent = prayer.content.replace(/[()]/g, '');
-            sourceText.textContent = prayer.source.replace(/[()]/g, '');
-            prayerCountBadge.textContent = prayer.count;
+    prayerText.textContent = prayer.content.replace(/[()]/g, '');
+    sourceText.textContent = prayer.source.replace(/[()]/g, '');
+    
+    // UPDATED LINE: Convert badge number
+    prayerCountBadge.textContent = toArabicNum(prayer.count);
 
-            currentCount = 0;
-            updateCounterUI(prayer.count);
+    currentCount = 0;
+    updateCounterUI(prayer.count);
 
-            progressText.textContent = `${currentIndex + 1} / ${currentPrayers.length}`;
-        }
+    // UPDATED LINE: Convert progress numbers (e.g., ١ / ١٠)
+    progressText.textContent = `${toArabicNum(currentIndex + 1)} / ${toArabicNum(currentPrayers.length)}`;
+}
 
         function updateCounterUI(targetCount) {
-            countDisplay.textContent = currentCount;
+    // UPDATED LINE: Convert the big counter number
+    countDisplay.textContent = toArabicNum(currentCount);
 
-            // Calculate progress
-            const progress = currentCount / targetCount;
-            const offset = CIRCLE_CIRCUMFERENCE - (progress * CIRCLE_CIRCUMFERENCE);
-            progressRingCircle.style.strokeDashoffset = offset;
-        }
+    // Calculate progress (Keep math using standard numbers!)
+    const progress = currentCount / targetCount;
+    const offset = CIRCLE_CIRCUMFERENCE - (progress * CIRCLE_CIRCUMFERENCE);
+    progressRingCircle.style.strokeDashoffset = offset;
+}
 
         function handleCounter() {
             if (!currentMode) return;
