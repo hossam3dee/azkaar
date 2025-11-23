@@ -25,6 +25,8 @@
             --text-secondary-light: #475569;
             --accent-color: #38bdf8;
             --accent-glow: 0 0 20px rgba(56, 189, 248, 0.5);
+            --nav-btn-bg-dark: rgba(30, 41, 59, 0.5);
+            --nav-btn-bg-light: linear-gradient(135deg, #e0f2fe 0%, #bcdcf1 100%);
         }
 
         body {
@@ -271,16 +273,24 @@
         }
 
         .nav-btn {
-            background: none;
-            border: none;
+            background: var(--nav-btn-bg-dark);
+            border: 1px solid var(--glass-border-dark);
             color: var(--text-secondary-dark);
             cursor: pointer;
-            font-size: 1.2rem;
-            padding: 10px;
+            font-size: 1rem;
+            padding: 10px 20px;
             font-family: 'Amiri', serif;
+            border-radius: 12px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
         }
 
         body.light-mode .nav-btn {
+            background: var(--nav-btn-bg-light);
+            border-color: var(--glass-border-light);
             color: var(--text-secondary-light);
         }
 
@@ -359,16 +369,22 @@
                 </div>
             </div>
 
-            <div class="counter-section flex justify-content align-items">
-                <button class="progress-btn" id="counterBtn">
-                    <div class="prayer-card"><div class="count-badge" id="prayerCountBadge">1</div></div>
-                    <svg class="progress-ring" width="100" height="100" overflow="visible">
-                        <circle class="progress-bg" stroke-width="6" fill="transparent" r="44" cx="50" cy="50" />
-                        <circle class="progress-ring__circle" stroke-width="6" fill="transparent" r="44" cx="50"
-                            cy="50" />
-                    </svg>
-                    <span id="countDisplay">0</span>
-                </button>
+            <div class="counter-section">
+                <div style="display: flex; gap: 20px; align-items: center; justify-content: center;">
+                    <button class="nav-btn" onclick="previousPrayer()">السابق</button>
+                    <button class="progress-btn" id="counterBtn">
+                        <div class="prayer-card">
+                            <div class="count-badge" id="prayerCountBadge">1</div>
+                        </div>
+                        <svg class="progress-ring" width="100" height="100" overflow="visible">
+                            <circle class="progress-bg" stroke-width="6" fill="transparent" r="44" cx="50" cy="50" />
+                            <circle class="progress-ring__circle" stroke-width="6" fill="transparent" r="44" cx="50"
+                                cy="50" />
+                        </svg>
+                        <span id="countDisplay">0</span>
+                    </button>
+                    <button class="nav-btn" onclick="nextPrayer()">التالي</button>
+                </div>
                 <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">اضغط للعد</p>
             </div>
         </div>
@@ -852,6 +868,20 @@
                         renderPrayer();
                     }, 300);
                 }
+            }
+        }
+
+        function nextPrayer() {
+            if (currentIndex < currentPrayers.length - 1) {
+                currentIndex++;
+                renderPrayer();
+            }
+        }
+
+        function previousPrayer() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderPrayer();
             }
         }
 
