@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Azkar+</title>
-    <link rel="icon" type="image/png" href="Prayer%20Beads.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="prayer-beads.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -124,7 +125,6 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             position: relative;
-            /* For badge positioning */
         }
 
         body.light-mode .glass-card {
@@ -172,6 +172,66 @@
 
         body.light-mode .choice-btn p {
             color: var(--text-secondary-light);
+        }
+
+        /* Install Button Style */
+        .install-btn {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            cursor: pointer;
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-primary-dark);
+        }
+        
+        body.light-mode .install-btn {
+            color: var(--text-primary-light);
+        }
+
+        .install-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Instructions Popup Styles */
+        #installInstructions {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--glass-bg-dark);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border-dark);
+            padding: 25px 20px;
+            box-sizing: border-box;
+            z-index: 1000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        body.light-mode #installInstructions {
+            background: #fff;
+            border-top: 1px solid #ccc;
+            color: #333;
+        }
+
+        .close-btn {
+            margin-top: 10px;
+            padding: 10px 30px;
+            background: var(--accent-color);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: bold;
+            font-family: 'Amiri', serif;
+            font-size: 1rem;
         }
 
         /* Prayer View */
@@ -332,7 +392,6 @@
             </button>
         </header>
 
-        <!-- Landing View -->
         <div id="landingView" class="landing-container">
             <div class="glass-card choice-btn" onclick="startApp('morning')">
                 <h2>أذكار الصباح</h2>
@@ -342,9 +401,13 @@
                 <h2>أذكار المساء</h2>
                 <p>بعد صلاة العصر ← قبل غروب الشمس</p>
             </div>
+            
+            <button id="installBtn" class="glass-card install-btn">
+                <span>تحميل</span>
+                <img src="download.png" alt="Download" style="width: 24px; height: 24px;">
+            </button>
         </div>
 
-        <!-- Prayer View -->
         <div id="prayerView" class="prayer-container hidden">
             <div class="nav-controls">
                 <button class="nav-btn" onclick="goHome()">الرئيسية</button>
@@ -359,14 +422,12 @@
 
             <div class="glass-card prayer-card" id="prayerCard">
                 <div class="content" id="prayerText">
-                    <!-- Prayer Text -->
-                </div>
+                    </div>
             </div>
 
             <div class="glass-card source-card" id="sourceCard">
                 <div id="sourceText">
-                    <!-- Source Text -->
-                </div>
+                    </div>
             </div>
 
             <div class="counter-section">
@@ -383,7 +444,7 @@
                         </svg>
                         <span id="countDisplay">0</span>
                     </button>
-                    <button class="nav-btn" onclick="nextPrayer()">تخطي</button>
+                    <button class="nav-btn" onclick="nextPrayer()">التالي</button>
                 </div>
                 <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">اضغط للعد</p>
             </div>
@@ -392,6 +453,13 @@
         <footer>
             &copy; <a href="https://hossam3dee.github.io/" target="_blank">hossam3dee.github.io</a>
         </footer>
+    </div>
+
+    <div id="installInstructions">
+        <p style="margin: 0 0 15px 0; font-size: 1.1rem;">لتحميل التطبيق:</p>
+        <img src="docs.png" alt="Installation Instructions" style="max-width: 100%; height: auto; margin-bottom: 15px; border-radius: 8px;">
+        <br>
+        <button class="close-btn" onclick="document.getElementById('installInstructions').style.display='none'">إغلاق</button>
     </div>
 
     <script>
@@ -900,8 +968,44 @@
             }
         });
 
+        /* --- PWA INSTALL LOGIC (UNIVERSAL) --- */
+        let deferredPrompt; // To hold the native event
+        const installBtn = document.getElementById('installBtn');
+        const installInstructions = document.getElementById('installInstructions');
+
+        // 1. Capture the event if it happens (Android/Desktop)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('Native install prompt captured');
+        });
+
+        // 2. Handle the Click
+        installBtn.addEventListener('click', () => {
+            if (deferredPrompt) {
+                // CASE A: We have the native prompt (Perfect scenario)
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted install');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                // CASE B: No native prompt available (iOS, or Android "Blocked")
+                // Show your manual instructions instead
+                installInstructions.style.display = 'block';
+            }
+        });
+
+        // 3. Register Service Worker (Required for PWA)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(() => console.log('SW registered'))
+                .catch(() => console.log('SW failed'));
+        }
+
     </script>
 </body>
-
 
 </html>
